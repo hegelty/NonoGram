@@ -6,24 +6,33 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class Grid : MonoBehaviour
 {
     public float everySqaureOffset = 0.0f;
     public GameObject gridSquare;
+    public GameObject horizontalHintText;
+    public GameObject verticalHintText;
     public TextMeshProUGUI lifeText;
     private List<GameObject> _gridSquares = new List<GameObject>();
     public Vector2 startPosition = new Vector2(-75f, -45f);
-
+    public Vector2 HorizontalPosition = new Vector2(-120f, 163f);
+    public Vector2 VerticalPosition = new Vector2(-75f, 210f);
+    public float hintTextOffset = 23f;
+    public int map_Id = 0;
+    
     public int mapSize;
     public int lifes;
+    public int leftAnswers = 0;
     public bool[,] MapInfo;
     
     void Start()
     {
-        LoadMapInfo(0);
+        LoadMapInfo(map_Id);
         CreateGrid();
         SetLifeText(lifes);
+        SpawnHintText();
     }
 
     private void CreateGrid()
@@ -31,6 +40,7 @@ public class Grid : MonoBehaviour
         SpawnGridsquare();
         SetSquarePosition();
     }
+    
 
     private void SpawnGridsquare()
     {
@@ -72,13 +82,60 @@ public class Grid : MonoBehaviour
             colNum++;
         }
     }
+
+    public void SpawnHintText()
+    {
+        for (int i = 0; i < mapSize; i++)
+        {
+            var hintText = Instantiate(horizontalHintText);
+            hintText.transform.parent = this.transform;
+            hintText.name = "HorizontalHintText_" + i;
+            hintText.GetComponent<TextMeshProUGUI>().text = "";
+            hintText.GetComponent<RectTransform>().anchoredPosition =
+                new Vector3(HorizontalPosition.x, HorizontalPosition.y - hintTextOffset*i);
+
+            int t = 0;
+            for (int j = 0; j < mapSize; j++)
+            {
+                if (t!=0&&!MapInfo[i, j])
+                {
+                    hintText.GetComponent<TextMeshProUGUI>().text += " " + (t);
+                    t = 0;
+                }
+                else if (MapInfo[i, j]) t++;
+            }
+            if(t!=0) hintText.GetComponent<TextMeshProUGUI>().text += " " + (t);
+        }
+        for (int i = 0; i < mapSize; i++)
+        {
+            var hintText = Instantiate(verticalHintText);
+            hintText.transform.parent = this.transform;
+            hintText.name = "VerticalHintText_" + i;
+            hintText.GetComponent<TextMeshProUGUI>().text = "";
+            hintText.GetComponent<RectTransform>().anchoredPosition =
+                new Vector3(VerticalPosition.x + hintTextOffset * i, VerticalPosition.y);
+
+            int t = 0;
+            for (int j = 0; j < mapSize; j++)
+            {
+                if (t!=0&&!MapInfo[j, i])
+                {
+                    hintText.GetComponent<TextMeshProUGUI>().text += " " + (t);
+                    t = 0;
+                }
+                else if (MapInfo[j, i]) t++;
+            }
+            if(t!=0) hintText.GetComponent<TextMeshProUGUI>().text += " " + (t);
+        }
+    }
     
     public void LoadMapInfo(int mapID)
     {
-        FileStream fs = new FileStream("./Assets/Maps/map_" + mapID + ".txt", FileMode.Open);
+        FileStream fs = new FileStream("./Assets/Maps/bin_" + mapID + ".txt", FileMode.Open);
         StreamReader sr = new StreamReader(fs);
         mapSize = Int32.Parse(sr.ReadLine());
         lifes = Int32.Parse(sr.ReadLine());
+        leftAnswers = 0;
         MapInfo = new bool[mapSize, mapSize];
         for (int i = 0; i < mapSize; i++)
         {
@@ -87,6 +144,7 @@ public class Grid : MonoBehaviour
             {
                 if (line != null) MapInfo[i, j] = ((line[j] - '0') == 1);
                 else MapInfo[i, j] = false;
+                leftAnswers+=MapInfo[i, j] ? 1 : 0;
             }
         }
     }
@@ -95,14 +153,42 @@ public class Grid : MonoBehaviour
     {
         lifes--;
         SetLifeText(lifes);
-        if (lifes == 0)
+        if (lifes <= 0)
         {
-            Debug.Log("Game Over");
+            ResetMap();
+        }
+    }
+    
+    public void CorrectAnswer()
+    {
+        leftAnswers--;
+        if (leftAnswers == 0)
+        {
+            ClearMap();
         }
     }
     
     public void SetLifeText(int life)
     {
         lifeText.text = "Life : " + life;
+    }
+
+    public void ResetMap()
+    {
+        foreach (GameObject square in _gridSquares)
+        {
+            square.GetComponent<Square>().Reset();
+        }
+        LoadMapInfo(map_Id);
+        SetLifeText(lifes);
+    }
+
+    public void ClearMap()
+    {
+        foreach (GameObject square in _gridSquares)
+        {
+            Destroy(gameObject);
+            lifeText.text = "";
+        }
     }
 }
