@@ -1,74 +1,76 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
+using static System.Int32;
 
 public class Grid : MonoBehaviour
 {
-    public float everySqaureOffset = 0.0f;
+    public float everySquareOffset;
     public GameObject gridSquare;
     public GameObject horizontalHintText;
     public GameObject verticalHintText;
     public TextMeshProUGUI lifeText;
     private List<GameObject> _gridSquares = new List<GameObject>();
-    public Vector2 startPosition = new Vector2(-75f, -45f);
-    public Vector2 HorizontalPosition = new Vector2(-120f, 163f);
-    public Vector2 VerticalPosition = new Vector2(-75f, 210f);
-    public float hintTextOffset = 23f;
-    public int map_Id = 0;
+    public Vector2 startPosition, horizontalPosition, verticalPosition;
+    public float hintTextOffset;
+
+    private int _mapId;
     
-    public int mapSize;
-    public int lifes;
-    public int leftAnswers = 0;
-    public bool[,] MapInfo;
-    
-    void Start()
+    private int _mapSize, _lifes, _leftAnswers;
+    private bool[,] _mapInfo;
+
+    public void Start()
     {
-        LoadMapInfo(map_Id);
+    }
+
+    public void StartGame(int mapId)
+    {
+        _mapId = mapId;
+        ResetMap();
+        LoadMapInfo(mapId);
         CreateGrid();
-        SetLifeText(lifes);
+        SetLifeText(_lifes);
         SpawnHintText();
     }
 
     private void CreateGrid()
     {
-        SpawnGridsquare();
+        SpawnGridSquare();
         SetSquarePosition();
     }
     
 
-    private void SpawnGridsquare()
+    private void SpawnGridSquare()
     {
         // 1, 2, 3, 4, 5, 6
         // 7, 8, 9, 10, ...
-        for (int row = mapSize-1; row >= 0; row--)
+        for (int row = _mapSize-1; row >= 0; row--)
         {
-            for (int col = 0; col < mapSize; col++)
+            for (int col = 0; col < _mapSize; col++)
             {
-                _gridSquares.Add(Instantiate(gridSquare) as GameObject);
+                _gridSquares.Add(Instantiate(gridSquare));
                 _gridSquares[_gridSquares.Count - 1].transform.parent = this.transform; //인스턴스를 오브젝트의 자식으로
                 _gridSquares[_gridSquares.Count - 1].name = "Grid_" + row + "_" + col;
-                _gridSquares[_gridSquares.Count - 1].GetComponent<Square>().Init(row, col, MapInfo[row, col]);
+                _gridSquares[_gridSquares.Count - 1].GetComponent<Square>().Init(row, col, _mapInfo[row, col]);
             }
         }
     }
 
     private void SetSquarePosition()
     {
-        var sqaureRect = _gridSquares[0].GetComponent<RectTransform>();
-        Vector2 offset = new Vector2();
-        offset.x = sqaureRect.rect.width * sqaureRect.transform.localScale.x + everySqaureOffset;
-        offset.y = sqaureRect.rect.height * sqaureRect.transform.localScale.y + everySqaureOffset;
+        var squareRect = _gridSquares[0].GetComponent<RectTransform>();
+        var offset = new Vector2();
+        var rect = squareRect.rect;
+        var localScale = squareRect.transform.localScale;
+        offset.x = rect.width * localScale.x + everySquareOffset;
+        offset.y = rect.height * localScale.y + everySquareOffset;
 
         int colNum = 0, rowNum = 0;
-        foreach (GameObject square in _gridSquares)
+        foreach (var square in _gridSquares)
         {
-            if (colNum == mapSize)
+            if (colNum == _mapSize)
             {
                 colNum = 0;
                 rowNum++;
@@ -83,112 +85,101 @@ public class Grid : MonoBehaviour
         }
     }
 
-    public void SpawnHintText()
+    private void SpawnHintText()
     {
-        for (int i = 0; i < mapSize; i++)
+        for (var i = 0; i < _mapSize; i++)
         {
-            var hintText = Instantiate(horizontalHintText);
-            hintText.transform.parent = this.transform;
+            var hintText = Instantiate(horizontalHintText, this.transform, true);
             hintText.name = "HorizontalHintText_" + i;
             hintText.GetComponent<TextMeshProUGUI>().text = "";
             hintText.GetComponent<RectTransform>().anchoredPosition =
-                new Vector3(HorizontalPosition.x, HorizontalPosition.y - hintTextOffset*i);
+                new Vector3(horizontalPosition.x, horizontalPosition.y - hintTextOffset*i);
 
-            int t = 0;
-            for (int j = 0; j < mapSize; j++)
+            var t = 0;
+            for (var j = 0; j < _mapSize; j++)
             {
-                if (t!=0&&!MapInfo[i, j])
+                if (t!=0&&!_mapInfo[i, j])
                 {
                     hintText.GetComponent<TextMeshProUGUI>().text += " " + (t);
                     t = 0;
                 }
-                else if (MapInfo[i, j]) t++;
+                else if (_mapInfo[i, j]) t++;
             }
             if(t!=0) hintText.GetComponent<TextMeshProUGUI>().text += " " + (t);
         }
-        for (int i = 0; i < mapSize; i++)
+        for (var i = 0; i < _mapSize; i++)
         {
-            var hintText = Instantiate(verticalHintText);
-            hintText.transform.parent = this.transform;
+            var hintText = Instantiate(verticalHintText, this.transform, true);
             hintText.name = "VerticalHintText_" + i;
             hintText.GetComponent<TextMeshProUGUI>().text = "";
             hintText.GetComponent<RectTransform>().anchoredPosition =
-                new Vector3(VerticalPosition.x + hintTextOffset * i, VerticalPosition.y);
+                new Vector3(verticalPosition.x + hintTextOffset * i, verticalPosition.y);
 
-            int t = 0;
-            for (int j = 0; j < mapSize; j++)
+            var t = 0;
+            for (var j = 0; j < _mapSize; j++)
             {
-                if (t!=0&&!MapInfo[j, i])
+                if (t!=0&&!_mapInfo[j, i])
                 {
-                    hintText.GetComponent<TextMeshProUGUI>().text += " " + (t);
+                    hintText.GetComponent<TextMeshProUGUI>().text += "\n" + (t);
                     t = 0;
                 }
-                else if (MapInfo[j, i]) t++;
+                else if (_mapInfo[j, i]) t++;
             }
-            if(t!=0) hintText.GetComponent<TextMeshProUGUI>().text += " " + (t);
+            if(t!=0) hintText.GetComponent<TextMeshProUGUI>().text += "\n" + (t);
         }
     }
-    
-    public void LoadMapInfo(int mapID)
+
+    private void LoadMapInfo(int mapID)
     {
-        FileStream fs = new FileStream("./Assets/Maps/bin_" + mapID + ".txt", FileMode.Open);
-        StreamReader sr = new StreamReader(fs);
-        mapSize = Int32.Parse(sr.ReadLine());
-        lifes = Int32.Parse(sr.ReadLine());
-        leftAnswers = 0;
-        MapInfo = new bool[mapSize, mapSize];
-        for (int i = 0; i < mapSize; i++)
+        var fs = new FileStream("./Assets/Maps/bin_" + mapID + ".txt", FileMode.Open);
+        var sr = new StreamReader(fs);
+        _mapSize = Parse(sr.ReadLine() ?? string.Empty);
+        _lifes = Parse(sr.ReadLine() ?? string.Empty);
+        _leftAnswers = 0;
+        _mapInfo = new bool[_mapSize, _mapSize];
+        for (var i = 0; i < _mapSize; i++)
         {
-            String line = sr.ReadLine();
-            for(int j=0;j<mapSize;j++)
+            var line = sr.ReadLine();
+            for(var j=0;j<_mapSize;j++)
             {
-                if (line != null) MapInfo[i, j] = ((line[j] - '0') == 1);
-                else MapInfo[i, j] = false;
-                leftAnswers+=MapInfo[i, j] ? 1 : 0;
+                if (line != null) _mapInfo[i, j] = ((line[j] - '0') == 1);
+                else _mapInfo[i, j] = false;
+                _leftAnswers+=_mapInfo[i, j] ? 1 : 0;
             }
         }
     }
     
     public void MinusLife()
     {
-        lifes--;
-        SetLifeText(lifes);
-        if (lifes <= 0)
+        _lifes--;
+        SetLifeText(_lifes);
+        if (_lifes <= 0)
         {
-            ResetMap();
+            GetComponentInParent<Story>().ShowStory(_mapId);
         }
     }
     
     public void CorrectAnswer()
     {
-        leftAnswers--;
-        if (leftAnswers == 0)
+        _leftAnswers--;
+        if (_leftAnswers == 0)
         {
-            ClearMap();
+            GetComponentInParent<GameManager>().ClearStage();
         }
     }
-    
-    public void SetLifeText(int life)
+
+    private void SetLifeText(int life)
     {
         lifeText.text = "Life : " + life;
     }
 
-    public void ResetMap()
+    private void ResetMap()
     {
         foreach (GameObject square in _gridSquares)
         {
             square.GetComponent<Square>().Reset();
         }
-        LoadMapInfo(map_Id);
-        SetLifeText(lifes);
-    }
-
-    public void ClearMap()
-    {
-        foreach (GameObject square in _gridSquares)
-        {
-            Destroy(gameObject);
-            lifeText.text = "";
-        }
+        LoadMapInfo(_mapId);
+        SetLifeText(_lifes);
     }
 }

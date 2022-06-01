@@ -5,11 +5,28 @@ using UnityEngine.UIElements;
 using UnityEngine.UI;
 using Image = UnityEngine.UI.Image;
 
+struct Sqaure_State
+{
+    public bool _isPainted; //색칠되어 있는지
+    public bool _isChecked; //체크(아닌곳)되어 있는지
+    public bool _isWrong; //오답인지
+    
+    public void setState(bool isPainted, bool isChecked, bool isWrong)
+    {
+        _isPainted = isPainted;
+        _isChecked = isChecked;
+        _isWrong = isWrong;
+    }
+    
+    public bool canPaint()
+    {
+        return !_isPainted && !_isChecked && !_isWrong;
+    }
+};
+
 public class Square : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler
 {
-    public bool _isPainted = false; //색칠되어 있는지
-    public bool _isChecked = false; //체크(아닌곳)되어 있는지
-    public bool _isWrong = false; //오답인지
+    private Sqaure_State _state;
     public GameObject square;
     public Image image;
     public Sprite baseImage, ansImage, wrongImage, checkImage;
@@ -19,11 +36,6 @@ public class Square : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler
     void Start()
     {
         image = square.GetComponent<Image>();
-    }
-
-    void Update()
-    {
-        
     }
 
     public void Init(int x, int y, bool ans)
@@ -36,15 +48,13 @@ public class Square : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler
 
     public void Reset()
     {
-        _isPainted = false;
-        _isChecked = false;
-        _isWrong = false;
+        _state.setState(false, false, false);
         SetImage(0);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if(Input.GetMouseButton(0) && _isChecked == false && _isWrong == false) //좌클릭
+        if(Input.GetMouseButton(0) && _state.canPaint()) //좌클릭
         {
             if (ans)
             {
@@ -54,26 +64,26 @@ public class Square : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler
             else
             {
                 SetImage(2);
-                _isWrong = true;
+                _state._isWrong = true;
                 GetComponentInParent<Grid>().MinusLife();
             }
-            _isPainted = true;
+            _state._isPainted = true;
         }
-        else if (Input.GetMouseButton(1) && _isPainted == false && _isChecked == false && _isWrong == false) //우클릭
+        else if (Input.GetMouseButton(1) && _state.canPaint()) //우클릭
         {
             SetImage(3);
-            _isChecked = true;
+            _state._isChecked = true;
         }
-        else if (Input.GetMouseButton(1) && _isChecked == true) //우클릭
+        else if (Input.GetMouseButton(1) && _state._isChecked) //우클릭
         {
             SetImage(0);
-            _isChecked = false;
+            _state._isChecked = false;
         }
     }
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if(eventData.button == PointerEventData.InputButton.Left && _isChecked == false && _isWrong == false) //좌클릭
+        if(eventData.button == PointerEventData.InputButton.Left && _state.canPaint()) //좌클릭
         {
             if (ans)
             {
@@ -83,20 +93,20 @@ public class Square : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler
             else
             {
                 SetImage(2);
-                _isWrong = true;
+                _state._isWrong = true;
                 GetComponentInParent<Grid>().MinusLife();
             }
-            _isPainted = true;
+            _state._isPainted = true;
         }
-        else if (eventData.button == PointerEventData.InputButton.Right && _isPainted == false && _isChecked == false && _isWrong == false) //우클릭
+        else if (eventData.button == PointerEventData.InputButton.Right && _state.canPaint()) //우클릭
         {
             SetImage(3);
-            _isChecked = true;
+            _state._isChecked = true;
         }
-        else if (eventData.button == PointerEventData.InputButton.Right && _isChecked == true) //우클릭
+        else if (eventData.button == PointerEventData.InputButton.Right && _state._isChecked) //우클릭
         {
             SetImage(0);
-            _isChecked = false;
+            _state._isChecked = false;
         }
     }
 
