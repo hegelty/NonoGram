@@ -12,16 +12,24 @@ public class Grid : MonoBehaviour
     public GameObject gridSquare;
     public GameObject horizontalHintText;
     public GameObject verticalHintText;
-    public TextMeshProUGUI lifeText;
+    public GameObject heartImaage;
+    public GameObject titleText;
+    private List<GameObject> _hearts = new List<GameObject>();
     private List<GameObject> _gridSquares = new List<GameObject>();
     private List<GameObject> _horizontalHintTexts, _verticalHintTexts;
-    public Vector2 startPosition, horizontalPosition, verticalPosition;
-    public float hintTextOffset;
+    public Vector2 startPosition, horizontalPosition, verticalPosition, heartPosition;
+    public float hintTextOffset, heartOffset;
+    private float widthRatio;
 
     private int _mapId;
     
     private int _mapSize, _lifes, _leftAnswers;
     private bool[,] _mapInfo;
+
+    private void Start()
+    {
+        widthRatio = Screen.width / 540f;
+    }
 
     public void StartGame(int mapId)
     {
@@ -29,7 +37,7 @@ public class Grid : MonoBehaviour
         if(mapId!=1) DestroyMap();
         LoadMapInfo(mapId);
         CreateGrid();
-        SetLifeText(_lifes);
+        SpawnHeart(_lifes);
         SpawnHintText();
     }
 
@@ -39,7 +47,6 @@ public class Grid : MonoBehaviour
         SetSquarePosition();
     }
     
-
     private void SpawnGridSquare()
     {
         _gridSquares = new List<GameObject>();
@@ -60,7 +67,6 @@ public class Grid : MonoBehaviour
         var squareRect = _gridSquares[0].GetComponent<RectTransform>();
         var offset = new Vector2();
         var rect = squareRect.rect;
-        var widthRatio = Screen.width / 540;
         var localScale = squareRect.transform.localScale;
         offset.x = (rect.width * localScale.x + everySquareOffset) * widthRatio;
         offset.y = (rect.height * localScale.y + everySquareOffset) * widthRatio;
@@ -89,7 +95,6 @@ public class Grid : MonoBehaviour
         _verticalHintTexts = new List<GameObject>();
         var squareRect = _gridSquares[0].GetComponent<RectTransform>();
         var rect = squareRect.rect;
-        var widthRatio = Screen.width / 540;
         var offsetR = (widthRatio - 1) * rect.width;
         hintTextOffset += everySquareOffset * (widthRatio - 1);
         
@@ -140,11 +145,34 @@ public class Grid : MonoBehaviour
             if(t!=0) hintText.GetComponent<TextMeshProUGUI>().text += "\n" + (t);
         }
     }
+    
+    private void SpawnHeart(int life)
+    {
+        _hearts = new List<GameObject>();
+        for (var i = 0; i < life; i++)
+        {
+            _hearts.Add(Instantiate(heartImaage));
+            _hearts[i].transform.parent = this.transform;
+            _hearts[i].name = "Heart_" + i;
+            var rect = _hearts[i].GetComponent<RectTransform>();
+            rect.localScale = new Vector3(rect.localScale.x * widthRatio, rect.localScale.y * widthRatio, 1);
+            rect.localPosition =
+                new Vector3(heartPosition.x - rect.rect.width * rect.localScale.x * i, heartPosition.y - rect.rect.width * (widthRatio - 1));
+        }
+    }
+
+    private void SetTitle(string title)
+    {
+        titleText.GetComponent<RectTransform>().localPosition = new Vector3(0, Screen.height * 0.85f, 0);
+        titleText.GetComponent<TextMeshProUGUI>().text = _mapId + ". " + title;
+        titleText.GetComponent<TextMeshProUGUI>().fontSize *= widthRatio;
+    }
 
     private void LoadMapInfo(int mapID)
     {
-        var fs = new FileStream("./Assets/Maps/bin_" + mapID + ".txt", FileMode.Open);
-        var sr = new StreamReader(fs);
+        TextAsset mapFile = Resources.Load<TextAsset>("Maps/bin_" + mapID);
+        var sr = new StringReader(mapFile.text);
+        SetTitle(sr.ReadLine());
         _mapSize = Parse(sr.ReadLine() ?? string.Empty);
         _lifes = Parse(sr.ReadLine() ?? string.Empty);
         _leftAnswers = 0;
@@ -159,16 +187,19 @@ public class Grid : MonoBehaviour
                 _leftAnswers+=_mapInfo[i, j] ? 1 : 0;
             }
         }
-        fs.Close();
     }
     
     public void MinusLife()
     {
         _lifes--;
-        SetLifeText(_lifes);
+        
         if (_lifes <= 0)
         {
             ResetMap();
+        }
+        else
+        {
+            _hearts[_lifes].SetActive(false);
         }
     }
     
@@ -180,20 +211,20 @@ public class Grid : MonoBehaviour
             GetComponentInParent<GameManager>().ClearStage();
         }
     }
-
-    private void SetLifeText(int life)
-    {
-        lifeText.text = "Life : " + life;
-    }
-
+    
     private void ResetMap()
     {
         foreach (GameObject square in _gridSquares)
         {
             square.GetComponent<Square>().Reset();
         }
+
+        foreach (GameObject heart in _hearts)
+        {
+            heart.SetActive(true);
+        }
         LoadMapInfo(_mapId);
-        SetLifeText(_lifes);
+        SpawnHeart(_lifes);
     }
 
     private void DestroyMap()
@@ -209,6 +240,10 @@ public class Grid : MonoBehaviour
         foreach (GameObject hintText in _horizontalHintTexts)
         {
             Destroy(hintText);
+        }
+        foreach (GameObject heart in _hearts)
+        {
+            Destroy(heart);
         }
     }
 }

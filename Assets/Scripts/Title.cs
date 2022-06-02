@@ -27,4 +27,14 @@ public class Title : MonoBehaviour
     {
         Application.Quit();
     }
+
+    public void OnClickVote()
+    {
+        Application.OpenURL("http://game.hegelty.me/");
+    }
+
+    public void OnClickGithub()
+    {
+        Application.OpenURL("https://github.com/hegelty/nonogram");
+    }
 }

@@ -37,10 +37,9 @@ public class Story : MonoBehaviour, IPointerDownHandler
 
     private void LoadStory(int storyId)
     {
-        var fs = new FileStream("./Assets/Stories/story_" + storyId + ".txt", FileMode.Open);
-        var sr = new StreamReader(fs);
+        TextAsset storyFile = Resources.Load<TextAsset>("Stories/story_" + storyId);
+        var sr = new StringReader(storyFile.text);
         _storyData = sr.ReadToEnd().Split("\n");
-        fs.Close();
     }
 
     public void OnPointerDown(PointerEventData eventData)

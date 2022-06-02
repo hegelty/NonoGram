@@ -6,7 +6,6 @@ public class GameManager : MonoBehaviour
 {
     public int lastLevel;
     public int stage;
-    // Start is called before the first frame update
     void Start()
     {
         stage = PlayerPrefs.GetInt("Stage");
@@ -16,20 +15,12 @@ public class GameManager : MonoBehaviour
 
     public void ClearStage()
     {
-        if(stage == lastLevel)
-        {
-            PlayerPrefs.SetInt("Stage", 0);
-            GameClear();
-        }
-        else
-        {
-            GetComponentInParent<Story>().ShowStory(stage);
-        }
+        GetComponentInParent<Story>().ShowStory(stage);
     }
     
     public void ReadStory()
     {
-        Debug.Log(stage);
+        if(stage==lastLevel) GameClear();
         stage++;
         PlayerPrefs.SetInt("Stage", stage);
         GetComponentInParent<Grid>().StartGame(stage);
@@ -37,6 +28,6 @@ public class GameManager : MonoBehaviour
 
     void GameClear()
     {
-        Debug.Log("wa");
+        UnityEngine.SceneManagement.SceneManager.LoadScene("TitleScene");
     }
 }
