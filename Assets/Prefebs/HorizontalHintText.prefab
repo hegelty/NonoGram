@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4960324005751788004}
   - component: {fileID: 4960324005751787930}
   - component: {fileID: 4960324005751788005}
+  - component: {fileID: -7608211011763700910}
   m_Layer: 5
   m_Name: HorizontalHintText
   m_TagString: Untagged
@@ -135,3 +136,14 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!210 &-7608211011763700910
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4960324005751788007}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0

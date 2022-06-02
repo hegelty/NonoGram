@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2121763673641118370}
   - component: {fileID: 2121763673641118371}
   - component: {fileID: 2121763673641118369}
+  - component: {fileID: -3007036343834874005}
   m_Layer: 5
   m_Name: Square
   m_TagString: Untagged
@@ -89,9 +90,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd4f109f4e97015428dcce3f66de14ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _isPainted: 0
-  _isChecked: 0
-  _isWrong: 0
   square: {fileID: 2121763673641118373}
   image: {fileID: 2121763673641118371}
   baseImage: {fileID: 21300000, guid: e428cf41b568329439a729b90cbf6200, type: 3}
@@ -101,3 +99,14 @@ MonoBehaviour:
   row: 0
   col: 0
   ans: 0
+--- !u!210 &-3007036343834874005
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2121763673641118373}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0

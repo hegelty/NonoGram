@@ -8,25 +8,28 @@ using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-public class Story : MonoBehaviour, IPointerEnterHandler
+public class Story : MonoBehaviour, IPointerDownHandler
 {
-    public GameObject backGround;
-    public GameObject storyText;
-    public float fadeTime;
+    public GameObject backGroundPrefeb;
+    public GameObject storyTextPrefeb;
+    private GameObject backGround;
+    private GameObject storyText;
     private int _storyId = -1;
     private string[] _storyData;
     private int _currentLine = 0;
     private TextMeshProUGUI _text;
-    // Start is called before the first frame update
-    
-    void Start()
-    {
-    }
-    
+
     public void ShowStory(int storyId)
     {
-        backGround.GetComponent<Image>().color = new Color(0, 0, 0, 180f/255f);
+        var widthRatio = Screen.width / 540;
         _storyId = storyId;
+        backGround = Instantiate(backGroundPrefeb, this.transform, true);
+        backGround.transform.localPosition = new Vector3(0, 0, 0);
+        backGround.GetComponent<Image>().color = new Color(0, 0, 0, 180f/255f);
+        storyText = Instantiate(storyTextPrefeb, this.transform, true);
+        storyText.GetComponent<TextMeshProUGUI>().fontSize = 24 * widthRatio;
+        storyText.GetComponent<RectTransform>().sizeDelta = new Vector2(Screen.width * 0.8f, storyText.GetComponent<RectTransform>().rect.height);
+        storyText.transform.localPosition = new Vector3(0,10000/widthRatio,0);
         _text = storyText.GetComponent<TextMeshProUGUI>();
         _text.text = "";
         LoadStory(storyId);
@@ -37,20 +40,24 @@ public class Story : MonoBehaviour, IPointerEnterHandler
         var fs = new FileStream("./Assets/Stories/story_" + storyId + ".txt", FileMode.Open);
         var sr = new StreamReader(fs);
         _storyData = sr.ReadToEnd().Split("\n");
+        fs.Close();
     }
 
-    public void OnPointerEnter(PointerEventData eventData)
+    public void OnPointerDown(PointerEventData eventData)
     {
-        if (Input.GetMouseButton(0) && _storyId >= 0) //좌클릭
+        if(eventData.button == PointerEventData.InputButton.Left && _storyId >= 0) //좌클릭
         {
             if(_currentLine>=_storyData.Length)
             {
-                backGround.GetComponent<Image>().color = new Color(0, 0, 0, 0);
-                storyText.GetComponent<TextMeshProUGUI>().text = "";
-                _storyId = 0;
+                Destroy(storyText);
+                Destroy(backGround);
+                _storyId = -1;
                 GetComponentInParent<GameManager>().ReadStory();
             }
-            _text.text += "\n" + _storyData[++_currentLine];
+            else
+            {
+                _text.text += "\n\n" + _storyData[_currentLine++];
+            }
         }
     }
 }

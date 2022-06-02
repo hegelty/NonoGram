@@ -4,20 +4,14 @@ using UnityEngine;
 
 public class Title : MonoBehaviour
 {
-    // Start is called before the first frame update
     void Start()
     {
         if(!PlayerPrefs.HasKey("Stage"))
         {
-            PlayerPrefs.SetInt("Stage", 1);
+            PlayerPrefs.SetInt("Stage", 0);
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     public void OnClickContinue()
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene("GameScene");
@@ -25,7 +19,7 @@ public class Title : MonoBehaviour
 
     public void OnClickRestart()
     {
-        PlayerPrefs.SetInt("Stage", 1);
+        PlayerPrefs.SetInt("Stage", 0);
         UnityEngine.SceneManagement.SceneManager.LoadScene("GameScene");
     }
     

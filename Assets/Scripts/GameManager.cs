@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         stage = PlayerPrefs.GetInt("Stage");
-        if(stage==1) GetComponentInParent<Story>().ShowStory(0);
+        if(stage==0) GetComponentInParent<Story>().ShowStory(0);
         else GetComponentInParent<Grid>().StartGame(stage);
     }
 
@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour
     {
         if(stage == lastLevel)
         {
-            PlayerPrefs.SetInt("Stage", 1);
+            PlayerPrefs.SetInt("Stage", 0);
             GameClear();
         }
         else
@@ -29,18 +29,14 @@ public class GameManager : MonoBehaviour
     
     public void ReadStory()
     {
-        PlayerPrefs.SetInt("Stage", stage + 1);
+        Debug.Log(stage);
+        stage++;
+        PlayerPrefs.SetInt("Stage", stage);
         GetComponentInParent<Grid>().StartGame(stage);
     }
 
     void GameClear()
     {
         Debug.Log("wa");
-    }
-    
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }
