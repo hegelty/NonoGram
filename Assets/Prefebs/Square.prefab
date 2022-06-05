@@ -68,7 +68,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 21407789a1d7f9b4fab9c127690aa52c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -92,10 +92,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   square: {fileID: 2121763673641118373}
   image: {fileID: 2121763673641118371}
-  baseImage: {fileID: 21300000, guid: e428cf41b568329439a729b90cbf6200, type: 3}
+  baseImage: {fileID: 21300000, guid: 21407789a1d7f9b4fab9c127690aa52c, type: 3}
   ansImage: {fileID: 21300000, guid: ca762f2c86a9fe44a955a0e75893d043, type: 3}
-  wrongImage: {fileID: 21300000, guid: 8720fd3b3d5ff9c4c9580a4ac39a2763, type: 3}
-  checkImage: {fileID: 21300000, guid: a3d26525b8779b549b723bb68fa23d4a, type: 3}
+  wrongImage: {fileID: 21300000, guid: 9d0a42380c5344b4aaea6e1161bcbbdd, type: 3}
+  checkImage: {fileID: 21300000, guid: f5a1f3e4a76869144a86cfdd860be798, type: 3}
   row: 0
   col: 0
   ans: 0

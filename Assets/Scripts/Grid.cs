@@ -17,11 +17,11 @@ public class Grid : MonoBehaviour
     public GameObject titleText; //스테이지 제목 텍스트
     private List<GameObject> _hearts = new List<GameObject>(); //라이프 인스턴스 리스트
     private List<GameObject> _gridSquares = new List<GameObject>(); //사각형 인스턴스 리스트
-    private List<GameObject> _horizontalHintTexts, _verticalHintTexts; //힌트 리스트들
+    private List<GameObject> _horizontalHintTexts = new List<GameObject>(), _verticalHintTexts = new List<GameObject>(); //힌트 리스트들
     public Vector2 startPosition, horizontalPosition, verticalPosition, heartPosition; //UI들 첫번째 위치
     public float hintTextOffset;
     private float _widthRatio; //가로 비율
-
+    private int _storyId; //스토리 번호
     private int _mapId; //스테이지 맵 번호
     
     private int _mapSize, _lifes, _leftAnswers; //맵 크기, 남은 목숨, 남은 정답 칸
@@ -34,11 +34,12 @@ public class Grid : MonoBehaviour
     }
 
     //게임 시작
-    public void StartGame(int mapId)
+    public void StartGame(int storyId, int mapId)
     {
+        _storyId = storyId;
         _mapId = mapId;
         if(mapId!=1) DestroyMap(); //첫 번째 맵이 아니면 맵 없애기
-        LoadMapInfo(mapId); //파일에서 맵 읽어오기
+        LoadMapInfo(storyId, mapId); //파일에서 맵 읽어오기
         CreateGrid(); //사각형 격자 생성
         SpawnHeart(_lifes); //하트 생성
         SpawnHintText(); //힌트 텍스트 생성
@@ -119,7 +120,7 @@ public class Grid : MonoBehaviour
             var textRect = hintText.GetComponent<RectTransform>(); //텍스트 인스턴스의 렉트 트랜스폼
             text.fontSize *= _widthRatio; //폰트를 가로 비율에 맞춰 키우기
             text.text = ""; //텍스트 초기화
-            textRect.sizeDelta = new Vector2(120 * _widthRatio, 25 * _widthRatio); //택스트 창 크기를 배율에 따라 설정
+            textRect.sizeDelta = new Vector2(120 * _widthRatio, 30 * _widthRatio); //택스트 창 크기를 배율에 따라 설정
             textRect.anchoredPosition = //캔버스의 앵커 기준으로 좌표 설정
                 new Vector3(horizontalPosition.x - offsetR, horizontalPosition.y - hintTextOffset * i);
 
@@ -147,7 +148,7 @@ public class Grid : MonoBehaviour
             var textRect = hintText.GetComponent<RectTransform>();
             text.text = "";
             text.fontSize *= _widthRatio;
-            textRect.sizeDelta = new Vector2(25 * _widthRatio, 120 * _widthRatio);
+            textRect.sizeDelta = new Vector2(30 * _widthRatio, 120 * _widthRatio);
             textRect.anchoredPosition =
                 new Vector3(verticalPosition.x - offsetR + hintTextOffset * i, verticalPosition.y);
 
@@ -193,10 +194,10 @@ public class Grid : MonoBehaviour
     }
 
     //맵 정보 불러오기
-    private void LoadMapInfo(int mapID)
+    private void LoadMapInfo(int storyId, int mapID)
     {
         //Resources 폴더 안에 있는 파일 불러오기(Assets/Resources 폴더는 빌드시에 반드시 포함)
-        var mapFile = Resources.Load<TextAsset>("Maps/bin_" + mapID);
+        var mapFile = Resources.Load<TextAsset>("Maps/story" + storyId + "/bin_" + mapID);
         var sr = new StringReader(mapFile.text); //불러온 TextAsset을 StringReader로 읽기
         SetTitle(sr.ReadLine()); //첫줄에 있는 그림 제목 불러와서 설정하기
         _mapSize = Parse(sr.ReadLine() ?? string.Empty); //두번째 줄 읽어서 int로 파싱(Null 검사는 IDE가 시켜서 함)
@@ -251,7 +252,7 @@ public class Grid : MonoBehaviour
         {
             heart.SetActive(true); //그 하트 활성화
         }
-        LoadMapInfo(_mapId); //맵 다시 불러오기(남은 정답 칸 복구용)
+        LoadMapInfo(_storyId, _mapId); //맵 다시 불러오기(남은 정답 칸 복구용)
     }
 
     //맵 전부 삭제

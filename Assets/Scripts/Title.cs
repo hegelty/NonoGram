@@ -15,15 +15,17 @@ public class Title : MonoBehaviour
     }
 
     //이어하기 버튼 누를 때
-    public void OnClickContinue()
+    public void OnClickContinue(int storyId)
     {
+        PlayerPrefs.SetInt("StoryId", storyId); //스토리 아이디 저장
         UnityEngine.SceneManagement.SceneManager.LoadScene("GameScene"); //게임신으로 전환
     }
 
     //새로하기 버튼 누를때
-    public void OnClickRestart()
+    public void OnClickRestart(int storyId)
     {
-        PlayerPrefs.SetInt("Stage", 0); //스테이지 초기화
+        PlayerPrefs.SetInt("StoryId", storyId); //스토리 아이디 저장
+        PlayerPrefs.SetInt("Stage" + storyId, 0); //스테이지 초기화
         UnityEngine.SceneManagement.SceneManager.LoadScene("GameScene"); //게임신으로 전환
     }
     
