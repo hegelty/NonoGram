@@ -1720,7 +1720,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uB9CC\uB4E0 \uC0AC\uB78C\n\n\uACBD\uAE30\uBD81\uACFC\uD559\uACE0\uB4F1\uD559\uAD50
+  m_text: "NonoGram v1.0.1\n\n\uB9CC\uB4E0 \uC0AC\uB78C\n\n\uACBD\uAE30\uBD81\uACFC\uD559\uACE0\uB4F1\uD559\uAD50
     17\uAE30\n\n2304 \uB098\uD0DC\uC591\n2303 \uAE40\uBBFC\uD615\n2315 \uC7A5\uC131\uC6B1"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 345fb305ffae03d4fa18f89ca0e9fb25, type: 2}
