@@ -2,7 +2,7 @@
 2학년 정보 수행평가 게임만들기
 플레이하기: [Windows](https://github.com/hegelty/NonoGram/releases/download/v1.0.2/NonoGramSetup.exe)
 
-## 팀원 및 주 역활
+## 팀원 및 주 역할
 * 2304 나태양([hegelty](https://github.com/hegelty)) - 개발
 * 2303 김민형 - 스토리, 그림, 디자인
 * 2315 장성욱 - 스토리, 아이디어
